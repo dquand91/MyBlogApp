@@ -2,21 +2,20 @@ package luongduongquan.com.myblogapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -65,30 +64,48 @@ public class MainActivity extends AppCompatActivity {
 	protected void onStart() {
 		super.onStart();
 
-
-
-		FirebaseRecyclerOptions<Blog> options =
-				new FirebaseRecyclerOptions.Builder<Blog>()
-						.setQuery(mDatabase, Blog.class)
-						.build();
-
-		FirebaseRecyclerAdapter<Blog, BlogViewHolder> adapter = new FirebaseRecyclerAdapter<Blog, BlogViewHolder>(options) {
-			@NonNull
+		FirebaseRecyclerAdapter<Blog, BlogViewHolder> adapter = new FirebaseRecyclerAdapter<Blog, BlogViewHolder>(
+				Blog.class,
+				R.layout.item_blog,
+				BlogViewHolder.class,
+				mDatabase
+		) {
 			@Override
-			public BlogViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-				View view = LayoutInflater.from(parent.getContext())
-						.inflate(R.layout.item_blog, parent, false);
-
-				return new BlogViewHolder(view);
-
-			}
-
-			@Override
-			protected void onBindViewHolder(@NonNull BlogViewHolder holder, int position, @NonNull Blog model) {
+			protected void populateViewHolder(BlogViewHolder viewHolder, Blog model, int position) {
+				Log.d("QUANTEST", "title = " + model.getTitle()
+						+ " --- Descript = " + model.getdescript()
+						+ " --- Image = " + model.getImage());
+				viewHolder.setTitle(model.getTitle());
+				viewHolder.setDescipt(model.getdescript());
+				viewHolder.setImage(model.getImage());
 
 			}
 		};
+
+
+
+//		FirebaseRecyclerOptions<Blog> options =
+//				new FirebaseRecyclerOptions.Builder<Blog>()
+//						.setQuery(mDatabase, Blog.class)
+//						.build();
+//
+//		FirebaseRecyclerAdapter<Blog, BlogViewHolder> adapter = new FirebaseRecyclerAdapter<Blog, BlogViewHolder>(options) {
+//			@NonNull
+//			@Override
+//			public BlogViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+//
+//				View view = LayoutInflater.from(parent.getContext())
+//						.inflate(R.layout.item_blog, parent, false);
+//
+//				return new BlogViewHolder(view);
+//
+//			}
+//
+//			@Override
+//			protected void onBindViewHolder(@NonNull BlogViewHolder holder, int position, @NonNull Blog model) {
+//
+//			}
+//		};
 
 		mListBlog.setAdapter(adapter);
 		adapter.notifyDataSetChanged();
@@ -101,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
 		public BlogViewHolder(View itemView) {
 			super(itemView);
 
-			itemView = mView;
+			mView = itemView;
 		}
 
 		public void setTitle(String title){
@@ -110,8 +127,16 @@ public class MainActivity extends AppCompatActivity {
 		}
 
 		public void setDescipt(String descipt){
-			TextView post_title = mView.findViewById(R.id.tvDescript_Main);
-			post_title.setText(descipt);
+			TextView post_descript = mView.findViewById(R.id.tvDescript_Main);
+			post_descript.setText(descipt);
+		}
+
+		public void setImage(String Uri){
+			ImageView post_img = mView.findViewById(R.id.imgPost_Main);
+			if(!Uri.isEmpty()){
+				Picasso.get().load(android.net.Uri.parse(Uri)).into(post_img);
+			}
+
 		}
 	}
 }

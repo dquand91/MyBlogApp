@@ -6,14 +6,14 @@ package luongduongquan.com.myblogapp;
 
 public class Blog {
 
-	private String title, description, image;
+	private String title, descript, image;
 
 	public Blog() {
 	}
 
 	public Blog(String title, String discription, String image) {
 		this.title = title;
-		this.description = discription;
+		this.descript = discription;
 		this.image = image;
 	}
 
@@ -25,12 +25,12 @@ public class Blog {
 		this.title = title;
 	}
 
-	public String getDescription() {
-		return description;
+	public String getdescript() {
+		return descript;
 	}
 
-	public void setDescription(String discription) {
-		this.description = discription;
+	public void setdescript(String discription) {
+		this.descript = discription;
 	}
 
 	public String getImage() {
