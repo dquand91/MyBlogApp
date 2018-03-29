@@ -1,17 +1,43 @@
 package luongduongquan.com.myblogapp;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
+
+	private RecyclerView mListBlog;
+
+	private DatabaseReference mDatabase;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		mListBlog = findViewById(R.id.list_blog);
+
+		mListBlog.setHasFixedSize(true);
+		mListBlog.setLayoutManager(new LinearLayoutManager(this));
+
+		mDatabase = FirebaseDatabase.getInstance().getReference().child("Blog");
+
+
 	}
 
 	@Override
@@ -33,5 +59,59 @@ public class MainActivity extends AppCompatActivity {
 		}
 
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+
+
+
+		FirebaseRecyclerOptions<Blog> options =
+				new FirebaseRecyclerOptions.Builder<Blog>()
+						.setQuery(mDatabase, Blog.class)
+						.build();
+
+		FirebaseRecyclerAdapter<Blog, BlogViewHolder> adapter = new FirebaseRecyclerAdapter<Blog, BlogViewHolder>(options) {
+			@NonNull
+			@Override
+			public BlogViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+				View view = LayoutInflater.from(parent.getContext())
+						.inflate(R.layout.item_blog, parent, false);
+
+				return new BlogViewHolder(view);
+
+			}
+
+			@Override
+			protected void onBindViewHolder(@NonNull BlogViewHolder holder, int position, @NonNull Blog model) {
+
+			}
+		};
+
+		mListBlog.setAdapter(adapter);
+		adapter.notifyDataSetChanged();
+	}
+
+	public static class BlogViewHolder extends RecyclerView.ViewHolder {
+
+		View mView;
+
+		public BlogViewHolder(View itemView) {
+			super(itemView);
+
+			itemView = mView;
+		}
+
+		public void setTitle(String title){
+			TextView post_title = mView.findViewById(R.id.tvTitle_Main);
+			post_title.setText(title);
+		}
+
+		public void setDescipt(String descipt){
+			TextView post_title = mView.findViewById(R.id.tvDescript_Main);
+			post_title.setText(descipt);
+		}
 	}
 }

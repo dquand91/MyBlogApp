@@ -15,6 +15,8 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -28,6 +30,7 @@ public class PostActivity extends AppCompatActivity {
 	private Uri imageURI;
 
 	private StorageReference mStorageReference;
+	private DatabaseReference mDataBaseFireBase;
 	private ProgressDialog mProgressDialog;
 
 	private static final int GALLERY_REQUEST = 1;
@@ -48,6 +51,8 @@ public class PostActivity extends AppCompatActivity {
 		mProgressDialog.setCanceledOnTouchOutside(false);
 
 		mStorageReference = FirebaseStorage.getInstance().getReference();
+
+		mDataBaseFireBase = FirebaseDatabase.getInstance().getReference().child("Blog");
 
 
 
@@ -72,8 +77,8 @@ public class PostActivity extends AppCompatActivity {
 
 	private void startPosting() {
 		mProgressDialog.show();
-		String title = edtTitle.getText().toString().trim();
-		String descrip = edtDescription.getText().toString().trim();
+		final String title = edtTitle.getText().toString().trim();
+		final String descrip = edtDescription.getText().toString().trim();
 		if(title.isEmpty() || descrip.isEmpty() || imageURI == null){
 			Toast.makeText(this, "Something is empty...", Toast.LENGTH_SHORT).show();
 			mProgressDialog.dismiss();
@@ -86,6 +91,14 @@ public class PostActivity extends AppCompatActivity {
 
 
 					Uri downloadURL = taskSnapshot.getDownloadUrl();
+
+					DatabaseReference newPost = mDataBaseFireBase.push();
+
+					newPost.child("title").setValue(title);
+					newPost.child("descript").setValue(descrip);
+					newPost.child("image").setValue(downloadURL.toString());
+
+					startActivity(new Intent(PostActivity.this, MainActivity.class));
 
 
 					mProgressDialog.dismiss();
