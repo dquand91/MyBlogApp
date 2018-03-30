@@ -9,8 +9,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
@@ -64,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 	protected void onStart() {
 		super.onStart();
 
-		FirebaseRecyclerAdapter<Blog, BlogViewHolder> adapter = new FirebaseRecyclerAdapter<Blog, BlogViewHolder>(
+		FirebaseRecyclerAdapter<Blog, BlogViewHolder> adapter  = new FirebaseRecyclerAdapter<Blog, BlogViewHolder>(
 				Blog.class,
 				R.layout.item_blog,
 				BlogViewHolder.class,
@@ -79,6 +81,22 @@ public class MainActivity extends AppCompatActivity {
 				viewHolder.setDescipt(model.getdescript());
 				viewHolder.setImage(model.getImage());
 
+			}
+
+			@Override
+			public BlogViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+				BlogViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
+
+				viewHolder.setCustomOnItemClick(new BlogViewHolder.CustomOnItemClick() {
+					@Override
+					public void OnItemClickListenerQuan(int position) {
+						Toast.makeText(MainActivity.this, "Click item = " + position, Toast.LENGTH_SHORT).show();
+					}
+				});
+
+
+
+				return viewHolder;
 			}
 		};
 
@@ -114,11 +132,18 @@ public class MainActivity extends AppCompatActivity {
 	public static class BlogViewHolder extends RecyclerView.ViewHolder {
 
 		View mView;
+		private CustomOnItemClick mCustomItemOnClick;
 
 		public BlogViewHolder(View itemView) {
 			super(itemView);
 
 			mView = itemView;
+			itemView.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					mCustomItemOnClick.OnItemClickListenerQuan(getPosition());
+				}
+			});
 		}
 
 		public void setTitle(String title){
@@ -138,5 +163,15 @@ public class MainActivity extends AppCompatActivity {
 			}
 
 		}
+
+		public interface CustomOnItemClick{
+			void OnItemClickListenerQuan(int position);
+		}
+
+		public void setCustomOnItemClick(CustomOnItemClick customOnClick) {
+			this.mCustomItemOnClick = customOnClick;
+		}
+
+
 	}
 }
